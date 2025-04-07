@@ -8,9 +8,14 @@ jobs:
     executor:
       name: android/android-machine
       tag: default
-      resource-class: large  # ini valid, bisa juga pakai 'medium' atau 'xlarge'
+      resource-class: large
+
     steps:
       - checkout
+
+      - run:
+          name: Make gradlew executable
+          command: chmod +x gradlew
 
       - run:
           name: Setup gradle.properties
