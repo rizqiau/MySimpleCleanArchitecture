@@ -7,13 +7,13 @@ jobs:
   build-and-test:
     executor:
       name: android/android-machine
-      tag: android-2023.09.1  # Cocok dengan Gradle Plugin 8.7.3 dan Kotlin 1.8.22
-
+      tag: default
+      resource-class: large  # ini valid, bisa juga pakai 'medium' atau 'xlarge'
     steps:
       - checkout
 
       - run:
-          name: Cache Gradle
+          name: Setup gradle.properties
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.jvmargs=-Xmx4g -Dkotlin.daemon.jvm.options=-Xmx2g" >> ~/.gradle/gradle.properties
@@ -23,7 +23,7 @@ jobs:
 
       - android/start-emulator-and-run-tests:
           test-command: ./gradlew connectedDebugAndroidTest
-          system-image: system-images;android-34;google_apis;x86_64  # Disesuaikan dengan targetSdk = 34
+          system-image: system-images;android-34;google_apis;x86_64
 
       - run:
           name: Assemble release build
