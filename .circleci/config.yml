@@ -1,0 +1,40 @@
+version: 2.1
+
+orbs:
+  android: circleci/android@2.4.0
+
+jobs:
+  build-and-test:
+    executor:
+      name: android/android-machine
+      tag: default
+      resource-class: large
+
+    steps:
+      - checkout
+
+      - run:
+          name: Make gradlew executable
+          command: chmod +x gradlew
+
+      - run:
+          name: Setup gradle.properties
+          command: |
+            mkdir -p ~/.gradle
+            echo "org.gradle.jvmargs=-Xmx4g -Dkotlin.daemon.jvm.options=-Xmx2g" >> ~/.gradle/gradle.properties
+
+      - android/run-tests:
+          test-command: ./gradlew lint testDebug --continue
+
+      - android/start-emulator-and-run-tests:
+          test-command: ./gradlew connectedDebugAndroidTest
+          system-image: system-images;android-34;google_apis;x86_64
+
+      - run:
+          name: Assemble release build
+          command: ./gradlew assembleRelease
+
+workflows:
+  build:
+    jobs:
+      - build-and-test
